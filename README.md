@@ -3,8 +3,9 @@
 ## Team Information
 
 -   **Members**:
-    -   Rahul Pulidindi (UNI: rp3254)
-    -   Priya Deshpande (UNI: ppd2119)
+    -   **Rahul Pulidindi (UNI: rp3254)**
+    -   **Priya Deshpande (UNI: ppd2119)**
+-   **Mentor: Dr. Hadjer Benmeziane, IBM Research**
 
 ---
 
@@ -50,80 +51,145 @@ We aim to develop and evaluate a layer-wise sensitivity tool for transformer-bas
 
 ## 3. Final Results Summary
 
-Example Table:
+### Table 1: Varying # Heads
 
-| Metric               | Value                           |
-| -------------------- | ------------------------------- |
-| Final Top-1 Accuracy | XX.XX%                          |
-| Inference Latency    | XX.XX ms                        |
-| Model Size           | XX MB                           |
-| Peak Memory Use      | XX MB                           |
-| Training Time/Epoch  | XX s                            |
-| Device               | A100, Jetson Nano, M1 Pro, etc. |
+| # Heads | Model Size (M) | Δ Loss | Δ Perplexity |
+| :-----: | :------------: | :----: | :----------: |
+|    2    |     14.97      |  0.79  |    301.47    |
+|    4    |     14.97      |  0.46  |    170.71    |
+|    8    |     14.97      |  0.83  |    393.83    |
+
+---
+
+### Table 2: Varying Context Size
+
+| Context | Model Size (M) | Δ Loss | Δ Perplexity |
+| :-----: | :------------: | :----: | :----------: |
+|   32    |     14.97      |  0.30  |    30.80     |
+|   64    |     14.97      |  0.13  |    49.01     |
+|   128   |     14.97      |  0.46  |    170.71    |
+
+---
+
+### Table 3: Varying Embedding Size
+
+| Embed | Model Size (M) | Δ Loss | Δ Perplexity |
+| :---: | :------------: | :----: | :----------: |
+|  128  |      6.96      |  0.37  |    90.50     |
+|  256  |     14.97      |  0.46  |    170.71    |
+|  512  |     34.14      |  0.01  |     5.80     |
+
+---
+
+### Table 4: Span Analysis
+
+|           Sweep           | Span Analog Loss | Span Analog PPL |
+| :-----------------------: | :--------------: | :-------------: |
+|      Heads (2, 4, 8)      |       0.41       |     235.41      |
+|   Context (32, 64, 128)   |       1.36       |     344.37      |
+| Embedding (128, 256, 512) |       0.58       |     226.86      |
+
+---
+
+### Table 5: Analog / Digital Loss Ratio
+
+| # Heads | Context | Embed | Analog / Digital Loss Ratio |
+| :-----: | :-----: | :---: | :-------------------------: |
+|    2    |   128   |  256  |            0.88             |
+|    4    |   32    |  256  |            0.94             |
+|    4    |   64    |  256  |            0.98             |
+|    4    |   128   |  128  |            0.94             |
+|    4    |   128   |  256  |            0.93             |
+|    4    |   128   |  512  |            1.00             |
+|    8    |   128   |  256  |            0.87             |
 
 ---
 
 ## 4. Reproducibility Instructions
 
-### A. Requirements
+## 4. Reproducibility Instructions
 
-Install dependencies:
+### A. Train Digital & Analog Models
 
-```bash
-pip install -r requirements.txt
-```
+1. **Open the training notebook**  
+   Launch `Experiments.ipynb` in your Jupyter environment.
 
----
+2. **Prepare the codebase**  
+   Copy the following into your working directory:
 
-B. Wandb Dashboard
+    - `main.py`
+    - `model.py`
+    - `train.py`
+    - the entire `config/` folder
 
-View training and evaluation metrics here: Wandb Dashboard Link
-(Replace with actual link)
+3. **Adjust dependencies**  
+   In `pyproject.toml`, comment out the following under `[tool.poetry.dependencies]`:
 
----
+    ```toml
+    # numpy = "*"
+    # pandas = "*"
+    # python = "..."
+    # requests = "*"
+    # torch = "*"
+    # transformers = "*"
+    ```
 
-### C. Specify for Training or For Inference or if Both
+4. **Proceed with installations**
+5. **Configure model params in** `nanogpt_config.py`.
+6. **Run the training script**
+    - In a new notebook cell: `conda run -n py310 python -u main.py`
+    - This will sequentially train both the digital and analog NanoGPT models using the settings defined in `main.py` and `train.py`.
 
-To train the model from scratch:
+### B. Evaluation
 
-```bash
-python train.py --config configs/default.yaml
-```
-
----
-
-### D. Evaluation
-
-To evaluate the trained model:
-
-```bash
-python eval.py --weights checkpoints/best_model.pth
-```
+1. **Obtain model checkpoints**
+    - Ensure that both the digital and analog model checkpoints (\*.pt files) have been saved in your working directory by the training step.
+2. **Open the evaluation notebook**
+    - Launch `Eval.ipynb`.
+3. **Repeat dependency setup**
+    - Use the same environment and installation steps as above.
+4. **Prepare the codebase**
+    - Copy `eval.py` into your working directory.
+    - Place your digital and analog checkpoint files alongside `eval.py`.
+5. **Specify model configuration**
+    - In `eval.py`, update the `tiny_cfg` dictionary to match the exact architecture parameters of the checkpoint you wish to evaluate.
+6. **Select evaluation mode**
+    - **Call `compute_perplexity(analog_model_check, checkpoint_path, tiny_cfg, ...)` with**:
+        - `analog_model_check = False` for the digital checkpoint
+        - `analog_model_check = True` for the analog checkpoint
+7. **Run the evaluation script**
+    - In a new notebook cell: `conda run -n py310 python eval.py`
+    - The script will output the average cross-entropy loss and perplexity for the selected model.
 
 ---
 
 ### E. Quickstart: Minimum Reproducible Result
 
-To reproduce our minimum reported result (e.g., XX.XX% accuracy), run:
+To reproduce our minimum reported result (≈ 95–98% digital accuracy retention on analog), run:
 
 ```bash
-# Step 1: Set up environment
-pip install -r requirements.txt
+# Step 1: Set up evaluation environment
 
-# Step 2: Download dataset
-bash scripts/download_dataset.sh  # if applicable
+# Step 2: Load analog and digital model checkpoints
 
-# Step 3: Run training (or skip if checkpoint is provided)
-python train.py --config configs/default.yaml
+# Step 3: Evaluate both models
+conda run -n py310 python eval.py
 
-# Step 4: Evaluate
-python eval.py --weights checkpoints/best_model.pth
 ```
 
 ---
 
 ## 5. Notes (up to you)
 
--   All scripts are located in `scripts/`, `train.py`, `eval.py`, and `configs/`.
--   Trained Model are saved in `models/`.
--   Contact information
+-   **All code lives in the root of the repo**:
+    -   `main.py`, `model.py`, `train.py`, `eval.py`
+    -   Configuration files in `config/(nanogpt_config.py, rpu_config.py)`
+-   **Jupyter notebooks for interactive analysis**:
+    -   `Experiments.ipynb` (training workflow)
+    -   `Eval.ipynb` (evaluation workflow)
+-   **Checkpoints are saved within the notebook**:
+    -   `Digital_NanoGPT_best.pt`
+    -   `Analog_NanoGPT_best.pt`
+-   **Contact & Support**:
+    -   Rahul Pulidindi (rp3254@columbia.edu)
+    -   Priya Deshpande (ppd2119@columbia.edu)
