@@ -179,7 +179,7 @@ conda run -n py310 python eval.py
 
 ---
 
-## 5. Notes (up to you)
+## 5. Notes
 
 -   **All code lives in the root of the repo**:
     -   `main.py`, `model.py`, `train.py`, `eval.py`
