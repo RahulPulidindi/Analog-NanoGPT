@@ -13,18 +13,18 @@ import wandb
 
 # Define all configurations to test
 CONFIGURATIONS = {
-    "num_heads": [2, 4, 8],
-    "context_size": [32, 64, 128],
-    "embeddings_size": [128, 256, 512],
-    "num_layers": [4, 8, 12],
-    "bias": [True, False],
-    "dropout": [0.1, 0.2, 0.3],
+    "num_heads": [2],
+    "context_size": [32],
+    "embeddings_size": [128],
+    "num_layers": [4],
+    "bias": [True],
+    "dropout": [0.1],
     "vocab_size": [50257]
 }
 
 # Training parameters
 TRAIN_PARAMS = {
-    "num_epochs": 200,
+    "num_epochs": 25,
     "batch_size": 16,
     "learning_rate": 3e-4,
     "val_frac": 0.2
@@ -65,13 +65,13 @@ def train_and_evaluate_config(config, device="cuda"):
     # Initialize and train digital model
     print(f"\nTraining digital model with config: {config_str}")
     digital_model = GPTLanguageModel(**model_config).to(device)
-    trainv2(digital_model_name, digital_model, **TRAIN_PARAMS)
+    trainv2(digital_model_name, digital_model,  max_length=context_size, **TRAIN_PARAMS)
     wandb.finish()
     
     # Convert to analog and train
     print(f"\nTraining analog model with config: {config_str}")
     analog_model = convert_to_analog(digital_model, rpu_config=InferenceRPUConfig())
-    trainv2(analog_model_name, analog_model, **TRAIN_PARAMS)
+    trainv2(analog_model_name, analog_model, max_length=context_size, **TRAIN_PARAMS)
     wandb.finish()
     
     # Evaluate both models
@@ -79,12 +79,14 @@ def train_and_evaluate_config(config, device="cuda"):
     digital_perplexity = compute_perplexity(
         False, 
         f"{digital_model_name}_best.pt",
+        context_size,
         model_config
     )
     
     analog_perplexity = compute_perplexity(
         True,
         f"{analog_model_name}_best.pt",
+        context_size,
         model_config
     )
     
