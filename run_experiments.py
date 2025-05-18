@@ -13,14 +13,14 @@ import wandb
 
 # Define all configurations to test
 CONFIGURATIONS = {
-    "num_heads": [2],
-    "context_size": [32],
-    "embeddings_size": [128],
-    "num_layers": [4],
-    "bias": [True],
-    "dropout": [0.1],
+    "num_heads": [2, 4, 8],
+    "context_size": [32, 64, 128],
+    "embeddings_size": [128, 256, 512],
+    "num_layers": [4, 8, 16],
+    "bias": [True, False],
+    "dropout": [0.1, 0.2, 0.3],
     "vocab_size": [50257]
-}
+    }
 
 # Training parameters
 TRAIN_PARAMS = {

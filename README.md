@@ -9,6 +9,49 @@
 
 ---
 
+
+## Setting up the environment 
+
+- Ensure you're running Python 3.10
+- Clone the following repo: https://github.com/Andrei-Aksionov/nanoGPTplus.git
+- **Adjust dependencies**  for compatibility between aihwkit and NanoGPT
+
+    In `pyproject.toml`, comment out the following under `[tool.poetry.dependencies]`:
+
+    ```toml
+    # numpy = "*"
+    # pandas = "*"
+    # python = "..."
+    # requests = "*"
+    # torch = "*"
+    # transformers = "*"
+    ```
+
+    Run pip install -e . to install nanoGPT dependencies after config changes. 
+- Install other required dependencies
+    ``` pip install torch==2.4.1```,
+    ```pip install numpy==2.2.5```,
+    ```pip install wandb```,
+    ```pip install pandas```
+
+- Install awhwkit-gpu
+- Download dataset (wikiText-2) from https://www.kaggle.com/datasets/vivekmettu/wikitext2-data?resource=download and unzip.
+- Change configurations to be run in run_experiments.py
+```
+    CONFIGURATIONS = {
+    "num_heads": [2, 4, 8],
+    "context_size": [32, 64, 128],
+    "embeddings_size": [128, 256, 512],
+    "num_layers": [4, 8, 16],
+    "bias": [True, False],
+    "dropout": [0.1, 0.2, 0.3],
+    "vocab_size": [50257]
+    }
+```
+
+- Run run_experiments.py --> (```python run_experiments.py```)
+- Results stored in /experiment_results_{date}_{time_stamp}/results.csv
+
 ## 1. Problem Statement
 
 We aim to develop and evaluate a layer-wise sensitivity tool for transformer-based models on analog in-memory computing (AIMC) hardware. Our goals are:
