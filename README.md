@@ -107,8 +107,6 @@ We aim to develop and evaluate a layer-wise sensitivity tool for transformer-bas
 
 ## 4. Reproducibility Instructions
 
-## 4. Reproducibility Instructions
-
 ### A. Train Digital & Analog Models
 
 1. **Open the training notebook**  

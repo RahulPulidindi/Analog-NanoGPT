@@ -9,6 +9,7 @@ from aihwkit.nn.conversion import convert_to_analog
 from aihwkit.simulator.configs import InferenceRPUConfig
 import pandas as pd
 from datetime import datetime
+import wandb
 
 # Define all configurations to test
 CONFIGURATIONS = {
@@ -65,11 +66,13 @@ def train_and_evaluate_config(config, device="cuda"):
     print(f"\nTraining digital model with config: {config_str}")
     digital_model = GPTLanguageModel(**model_config).to(device)
     trainv2(digital_model_name, digital_model, **TRAIN_PARAMS)
+    wandb.finish()
     
     # Convert to analog and train
     print(f"\nTraining analog model with config: {config_str}")
     analog_model = convert_to_analog(digital_model, rpu_config=InferenceRPUConfig())
     trainv2(analog_model_name, analog_model, **TRAIN_PARAMS)
+    wandb.finish()
     
     # Evaluate both models
     print(f"\nEvaluating models with config: {config_str}")

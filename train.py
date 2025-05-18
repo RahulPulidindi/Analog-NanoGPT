@@ -309,7 +309,7 @@ def trainv2(
 
     # 7) wandb setup
     wandb.init(
-        project="inferene-runs",
+        project="experiments",
         name=model_name,
         config={
             "epochs": num_epochs,
