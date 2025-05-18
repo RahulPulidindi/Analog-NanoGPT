@@ -1,0 +1,13 @@
+torch>=2.0.0
+numpy>=1.21.0
+tqdm>=4.65.0
+loguru>=0.7.0
+einops>=0.6.0
+# Mamba dependencies
+mamba-ssm>=1.0.0
+causal-conv1d>=1.0.0
+# Llama dependencies
+fms>=0.1.0  # foundational-model-stack
+# Optional but recommended
+wandb>=0.15.0  # for experiment tracking
+tensorboard>=2.13.0  # for visualization 
