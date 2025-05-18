@@ -34,7 +34,7 @@
     ```pip install wandb```,
     ```pip install pandas```
 
-- Install awhwkit-gpu
+- Install aihwkit-gpu
 - Download dataset (wikiText-2) from https://www.kaggle.com/datasets/vivekmettu/wikitext2-data?resource=download and unzip.
 - Change configurations to be run in run_experiments.py
 ```
