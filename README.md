@@ -9,36 +9,69 @@
 
 ---
 
+## Running Automated Training
 
-## Setting up the environment 
+This section describes the process of running automated experiments using `run_experiments.py`. The script performs systematic evaluation of model configurations across various hyperparameters.
 
-- Ensure you're running Python 3.10
-- Clone the following repo: https://github.com/Andrei-Aksionov/nanoGPTplus.git
-- **Adjust dependencies**  for compatibility between aihwkit and NanoGPT
+### Prerequisites
 
-    In `pyproject.toml`, comment out the following under `[tool.poetry.dependencies]`:
+-   Python 3.10
+-   GPU-compatible environment (CUDA 12.1)
 
-    ```toml
-    # numpy = "*"
-    # pandas = "*"
-    # python = "..."
-    # requests = "*"
-    # torch = "*"
-    # transformers = "*"
+### Installation Steps
+
+1. **Clone the Base NanoGPT Repository**
+
+    ```bash
+    git clone https://github.com/Andrei-Aksionov/nanoGPTplus.git
     ```
 
-    Run pip install -e . to install nanoGPT dependencies after config changes. 
-- Install other required dependencies
-    ``` pip install torch==2.4.1```,
-    ```pip install numpy==2.2.5```,
-    ```pip install wandb```,
-    ```pip install pandas```
+2. **Configure Dependencies**
 
-- Install aihwkit-gpu
-- Download dataset (wikiText-2) from https://www.kaggle.com/datasets/vivekmettu/wikitext2-data?resource=download and unzip.
-- Change configurations to be run in run_experiments.py
-```
-    CONFIGURATIONS = {
+    - This will adjust compatibility issues between AIHWKit and NanoGPT.
+    - Modify `pyproject.toml` by commenting out the following dependencies under `[tool.poetry.dependencies]`:
+        ```toml
+        # numpy = "*"
+        # pandas = "*"
+        # python = "..."
+        # requests = "*"
+        # torch = "*"
+        # transformers = "*"
+        ```
+    - Install NanoGPT dependencies:
+        ```bash
+        pip install -e .
+        ```
+
+3. **Install Required Packages**
+
+    ```bash
+    pip install torch==2.4.1
+    pip install numpy==2.2.5
+    pip install wandb
+    pip install pandas
+    ```
+
+4. **Install aihwkit-gpu**
+
+5. **Prepare WikiText-2 Dataset**
+    - Download WikiText-2 dataset from [Kaggle](https://www.kaggle.com/datasets/vivekmettu/wikitext2-data?resource=download)
+    - Extract the dataset to your working directory
+    - Configure the dataset path in `run_experiments.py`:
+        ```python
+        # Update this path to point to your WikiText-2 dataset location
+        data_dir = "/path/to/your/wikitext2"  # Replace with your actual path
+        get_text_examples(data_dir=data_dir)
+        ```
+
+### Configuration
+
+The experiment configurations are defined in `run_experiments.py`.
+
+The default configuration explores (3 x 3 x 3 x 3 x 2 x 3 x 1) = 486 different model architectures:
+
+```python
+CONFIGURATIONS = {
     "num_heads": [2, 4, 8],
     "context_size": [32, 64, 128],
     "embeddings_size": [128, 256, 512],
@@ -46,11 +79,24 @@
     "bias": [True, False],
     "dropout": [0.1, 0.2, 0.3],
     "vocab_size": [50257]
-    }
+}
 ```
 
-- Run run_experiments.py --> (```python run_experiments.py```)
-- Results stored in /experiment_results_{date}_{time_stamp}/results.csv
+### Running Experiments
+
+Execute the automated training script:
+
+```bash
+python run_experiments.py
+```
+
+### Results
+
+The experiment results are automatically saved in a timestamped directory:
+
+```
+/experiment_results_{date}_{time_stamp}/results.csv
+```
 
 ## 1. Problem Statement
 
